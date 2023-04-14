@@ -1,0 +1,26 @@
+from pydantic import BaseModel
+__version__ = "0.1.1"
+
+class Fraud(BaseModel):
+    CUSTOMER_ID: float
+    TERMINAL_ID: float
+    TX_AMOUNT: float
+    TX_TIME_SECONDS: float
+    TX_TIME_DAYS: float
+    TX_DURING_WEEKEND: float
+    TX_DURING_NIGHT: float
+    CUSTOMER_ID_NB_TX_1DAY_WINDOW: float
+    CUSTOMER_ID_AVG_AMOUNT_1DAY_WINDOW: float
+    CUSTOMER_ID_NB_TX_7DAY_WINDOW: float
+    CUSTOMER_ID_AVG_AMOUNT_7DAY_WINDOW: float
+    CUSTOMER_ID_NB_TX_30DAY_WINDOW: float
+    CUSTOMER_ID_AVG_AMOUNT_30DAY_WINDOW: float
+    TERMINAL_ID_NB_TX_1DAY_WINDOW: float
+    TERMINAL_ID_RISK_1DAY_WINDOW: float
+    TERMINAL_ID_NB_TX_7DAY_WINDOW: float
+    TERMINAL_ID_RISK_7DAY_WINDOW: float
+    TERMINAL_ID_NB_TX_30DAY_WINDOW: float
+    TERMINAL_ID_RISK_30DAY_WINDOW: float
+
+
+
