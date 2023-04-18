@@ -21,6 +21,3 @@ class Fraud(BaseModel):
     TERMINAL_ID_RISK_7DAY_WINDOW: float
     TERMINAL_ID_NB_TX_30DAY_WINDOW: float
     TERMINAL_ID_RISK_30DAY_WINDOW: float
-
-
-
