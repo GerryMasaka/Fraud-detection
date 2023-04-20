@@ -1,7 +1,6 @@
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Float
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, Integer, Float
 
-from database import Base
+from app.Database.database import Base
 
 class Fraud(Base):
     __tablename__ = "frauds"

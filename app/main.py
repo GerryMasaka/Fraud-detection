@@ -7,16 +7,17 @@ import pickle
 #import pandas as pd
 from pydantic import BaseModel
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from typing_extensions import Annotated
 import secrets
 from pathlib import Path
 model_version = "0.1.0"
 from sqlalchemy.orm import Session
 from typing import List
-import crud, models, schemas
-from database import SessionLocal, engine
-models.Base.metadata.create_all(bind=engine)
+from app.Crud import crud
+from app.Schema import schemas
+from app.Models import models
+from app.Database.database import SessionLocal, engine
 
+models.Base.metadata.create_all(bind=engine)
 security = HTTPBasic()
 app = FastAPI()
 BASE_DIR = Path(__file__).resolve(strict=True).parent
@@ -133,6 +134,8 @@ def predict_fraud(data:Fraud, credentials: HTTPBasicCredentials = Depends(securi
         'classification': prediction
     }
 
+#TODO  YOU HAVEN'T CALLED THE create_fraud() METHOD TO SAVE THE TRANSCTION DATA
+#TODO SEPARATE YOUR CODE INTO MODULE TO MAKE IT CLEANER
 def create_fraud(fraud: schemas.Fraud, db: Session = Depends(get_db)):
     return crud.create_fraud(db=db, fraud=fraud)
 
@@ -145,6 +148,3 @@ if __name__ == '__main__':
     uvicorn.run(app, host='127.0.0.1', port=8000)
 
 #uvicorn app:app --reload
-
-
-       

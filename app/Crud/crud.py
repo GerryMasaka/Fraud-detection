@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
-import logging 
-import models, schemas
+import logging
+from app.Schema import schemas
+from app.Models import models
 
 
 def get_fraud(db: Session, Fraud_id: int):
