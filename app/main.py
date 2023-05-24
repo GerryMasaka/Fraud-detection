@@ -13,8 +13,12 @@ from pathlib import Path
 model_version = "0.1.0"
 from sqlalchemy.orm import Session
 from typing import List
-import crud, models, schemas
+import models, schemas
+from crud import create_fraud
 from database import SessionLocal, engine
+import json
+import requests
+
 models.Base.metadata.create_all(bind=engine)
 
 security = HTTPBasic()
@@ -105,6 +109,9 @@ def predict_fraud(data:Fraud, credentials: HTTPBasicCredentials = Depends(securi
     TERMINAL_ID_RISK_7DAY_WINDOW = data['TERMINAL_ID_RISK_7DAY_WINDOW']
     TERMINAL_ID_NB_TX_30DAY_WINDOW = data['TERMINAL_ID_NB_TX_30DAY_WINDOW']
     TERMINAL_ID_RISK_30DAY_WINDOW = data['TERMINAL_ID_RISK_30DAY_WINDOW']
+    #print(data)
+   
+    #return data
 
     prediction = classifier.predict([[CUSTOMER_ID,TERMINAL_ID,
     TX_AMOUNT,TX_TIME_SECONDS,
@@ -124,25 +131,31 @@ def predict_fraud(data:Fraud, credentials: HTTPBasicCredentials = Depends(securi
     TERMINAL_ID_NB_TX_30DAY_WINDOW,
     TERMINAL_ID_RISK_30DAY_WINDOW]])
 
-  
+    token= "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNTQxMTIwMTY3OTAiLCJpYXQiOjE2ODI1OTAzNjAsImV4cCI6MTY4MjU5MjE2MH0.-nY1qKFUrAo0FosieGUyszIQ-lCQyWwtRbo2eRwW3_8"
+    
     if(prediction[0]>0.5):
         prediction="Fraud Detected"
+        #create_fraud(db,Fraud)
     else:
-        prediction="Legitimate Transaction "
+        prediction="Legitimate Transaction"
+        url = "http://localhost/fraud/app/sendmoney"# Replace with the URL of the API endpoint
+        payload = {"senderAccountNumber": CUSTOMER_ID, "receiverAccountNumber": TERMINAL_ID, "transactionAmount": TX_AMOUNT, "pin": "3099"} # Replace with the payload data
+        headers = {'Authorization': 'Bearer ' + "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIyNTQxMTIwMTY3OTAiLCJpYXQiOjE2ODI1OTAzNjAsImV4cCI6MTY4MjU5MjE2MH0.-nY1qKFUrAo0FosieGUyszIQ-lCQyWwtRbo2eRwW3_8",'Content-Type':'application/json'}
+        response = requests.post(url,headers=headers, data=json.dumps(payload))
+        print(response.content) # Replace with the desired response handling
+
     return {
-        'classification': prediction
+        'classification': prediction,
+        #'pin':("3099"),  
+        'senderAccountNumber': CUSTOMER_ID,
+        'receiverAccountNumber': TERMINAL_ID,
+        'transactionAmount': TX_AMOUNT
     }
 
-def create_fraud(fraud: schemas.Fraud, db: Session = Depends(get_db)):
-    return crud.create_fraud(db=db, fraud=fraud)
 
-@app.get("/frauds/", response_model=List[schemas.Fraud])
-def read_fraud(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-   fraud = crud.get_fraud(db, skip=skip, limit=limit)
-   return fraud
-
+#@app.post("/frauds/", response_model=schemas.Fraud)
 if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=8000)
+    uvicorn.run(app, host='0.0.0.0', port=8000)
 
 #uvicorn app:app --reload
 
